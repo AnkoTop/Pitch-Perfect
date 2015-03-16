@@ -3,6 +3,7 @@
 //  Pitch Perfect
 //
 //  Created by Anko Top on 09/03/15.
+//      after review: inetgrated pause/resume in 1 toggle button 16/03/2015.
 //  Copyright (c) 2015 Anko Top. All rights reserved.
 //
 
@@ -13,28 +14,20 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
 
     var audioRecorder:AVAudioRecorder!
     var recordedAudio: RecordedAudio!
+    var paused = false
     
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
-    @IBOutlet weak var pauseButton: UIButton!
-    @IBOutlet weak var resumeButton: UIButton!
     @IBOutlet weak var stopRecording: UILabel!
-    @IBOutlet weak var resumeRecording: UILabel!
-    @IBOutlet weak var pauseRecording: UILabel!
+    @IBOutlet weak var pauseOrResumeRecording: UILabel!
     @IBOutlet weak var recordingStatus: UILabel!
-    @IBOutlet weak var pausedStatus: UILabel!
+    @IBOutlet weak var pauseResumeButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
 
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     
     override func viewWillAppear(animated: Bool) {
         super.viewDidAppear(false)
@@ -48,8 +41,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         recordButton.enabled = false
         stopButton.hidden = false
         stopRecording.hidden = false
-        pauseButton.hidden = false
-        pauseRecording.hidden = false
+        paused = false
+        initPauseOrResumeButton()
+        pauseResumeButton.hidden = false
         recordingStatus.textColor = UIColor.redColor()
         recordingStatus.text = "Recording"
        
@@ -85,11 +79,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
             stopButton.hidden = true
             stopRecording.hidden = true
             recordButton.enabled = true
-            pauseButton.hidden = true
-            pauseRecording.hidden = true
-
         }
     }
+    
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "stopRecording" {
@@ -100,36 +92,26 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     }
     
     
-    @IBAction func pauseRecording(sender: UIButton) {
-        // prepare screen
-        pausedStatus.hidden = false
-        resumeButton.hidden = false
-        resumeRecording.hidden = false
-        pauseButton.hidden = true
-        pauseRecording.hidden = true
-        recordingStatus.hidden = true
-        
-        //pause recording
-        audioRecorder.pause()
-    }
-    
-    
-    @IBAction func resumeRecording(sender: UIButton) {
-        recordingStatus.hidden = false
-        resumeButton.hidden = true
-        resumeRecording.hidden = true
-        pauseButton.hidden = false
-        pauseRecording.hidden = false
-        pausedStatus.hidden = true
-        
-        // resume recording
-        audioRecorder.record()
+    @IBAction func pauseOrResumeRecording(sender: UIButton) {
+        // toggle between pause & resume
+        if paused == false {
+            paused = true
+            initPauseOrResumeButton()
+            recordingStatus.textColor = UIColor.redColor()
+            recordingStatus.text = "Paused"
+            audioRecorder.pause()
+        } else {
+            paused = false
+            initPauseOrResumeButton()
+            recordingStatus.hidden = false
+            recordingStatus.textColor = UIColor.redColor()
+            recordingStatus.text = "Recording"
+            audioRecorder.record()
+        }
     }
     
     
     @IBAction func stopRecordingAudio(sender: UIButton) {
-        //To do: user sitches to next screen, after return tis screen is initialized
-        // also do it here?
         initVisibleItems()
         // stop recording
         audioRecorder.stop()
@@ -138,18 +120,31 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     }
     
     
+    func initPauseOrResumeButton(){
+        //depending on what we are doing set the correct image
+        pauseOrResumeRecording.hidden = false
+        if paused {
+            let image = UIImage(named: "resume button")
+            pauseResumeButton.setBackgroundImage(image, forState: .Normal)
+            pauseOrResumeRecording.text = "Resume"
+        } else {
+            let image = UIImage(named: "pause button")
+            pauseResumeButton.setBackgroundImage(image, forState: .Normal)
+            pauseOrResumeRecording.text = "Pause"
+        }
+    }
+    
+    
     func initVisibleItems(){
         // init layout screen
         stopButton.hidden = true
-        pauseButton.hidden = true
-        resumeButton.hidden = true
+        stopRecording.hidden = true
         recordButton.enabled = true
+        recordingStatus.hidden = false
         recordingStatus.textColor = UIColor.blackColor()
         recordingStatus.text = "Tap the mic to record"
-        pausedStatus.hidden = true
-        stopRecording.hidden = true
-        resumeRecording.hidden = true
-        pauseRecording.hidden = true
+        pauseResumeButton.hidden = true
+        pauseOrResumeRecording.hidden = true
     }
 }
 
