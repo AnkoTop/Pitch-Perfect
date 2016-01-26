@@ -23,6 +23,12 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     @IBOutlet weak var recordingStatus: UILabel!
     @IBOutlet weak var pauseResumeButton: UIButton!
     
+    let recordSettings = [AVSampleRateKey : NSNumber(float: Float(44100.0)),
+        AVFormatIDKey : NSNumber(int: Int32(kAudioFormatMPEG4AAC)),
+        AVNumberOfChannelsKey : NSNumber(int: 1),
+        AVEncoderAudioQualityKey : NSNumber(int: Int32(AVAudioQuality.Medium.rawValue))]
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -58,12 +64,16 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         
         
         //setup audio session & prepare AudioRecorder
-        var session = AVAudioSession.sharedInstance()
+        let session = AVAudioSession.sharedInstance()
         do {
             try session.setCategory(AVAudioSessionCategoryPlayAndRecord)
         } catch _ {
         }
-        audioRecorder = AVAudioRecorder(URL: filePath, settings: nil, error: nil)
+        do {
+            try audioRecorder = AVAudioRecorder(URL: filePath!, settings: recordSettings)
+        } catch{
+            print("error in setting up audioReocorder")
+        }
         audioRecorder.delegate = self
         audioRecorder.meteringEnabled = true
         audioRecorder.prepareToRecord()

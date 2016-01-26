@@ -106,11 +106,11 @@ class PlaySoundsViewController: UIViewController {
         
         initAudio()
         
-        var audioPlayerNode = AVAudioPlayerNode()
+        let audioPlayerNode = AVAudioPlayerNode()
         audioEngine.attachNode(audioPlayerNode)
         
         
-        var audioTimePitch = AVAudioUnitTimePitch()
+        let audioTimePitch = AVAudioUnitTimePitch()
         audioTimePitch.pitch = pitch  // default = 1.0 range: -2400 to 2400
         audioTimePitch.rate = 1 // default = 1.0 range: 1/32 to 32.0.
         audioEngine.attachNode(audioTimePitch)
@@ -120,7 +120,7 @@ class PlaySoundsViewController: UIViewController {
         
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
         do {
-            try audioEngine.startAndReturnError()
+            try audioEngine.start()
         } catch _ {
         }
         
@@ -132,10 +132,10 @@ class PlaySoundsViewController: UIViewController {
         
         initAudio()
         
-        var audioPlayerNode = AVAudioPlayerNode()
+        let audioPlayerNode = AVAudioPlayerNode()
         audioEngine.attachNode(audioPlayerNode)
         
-        var audioReverb = AVAudioUnitReverb()
+        let audioReverb = AVAudioUnitReverb()
         audioReverb.loadFactoryPreset(.Cathedral)
         audioReverb.wetDryMix = 20 // default = 0 range: 0 to 100
         audioEngine.attachNode(audioReverb)
@@ -145,7 +145,7 @@ class PlaySoundsViewController: UIViewController {
         
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
         do {
-            try audioEngine.startAndReturnError()
+            try audioEngine.start()
         } catch _ {
         }
         
@@ -157,10 +157,10 @@ class PlaySoundsViewController: UIViewController {
         
         initAudio()
         
-        var audioPlayerNode = AVAudioPlayerNode()
+        let audioPlayerNode = AVAudioPlayerNode()
         audioEngine.attachNode(audioPlayerNode)
         
-        var audioDelay = AVAudioUnitDelay()
+        let audioDelay = AVAudioUnitDelay()
         audioDelay.delayTime = 0.75 // delay in seconds
         audioDelay.feedback = 20 //default = 50 range = -100 to 100
         audioDelay.wetDryMix = 25 // default = 0 range: 0 to 100
@@ -171,7 +171,7 @@ class PlaySoundsViewController: UIViewController {
         
         audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
         do {
-            try audioEngine.startAndReturnError()
+            try audioEngine.start()
         } catch _ {
         }
         
