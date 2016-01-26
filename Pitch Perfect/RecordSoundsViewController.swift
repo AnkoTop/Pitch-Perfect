@@ -59,7 +59,10 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         
         //setup audio session & prepare AudioRecorder
         var session = AVAudioSession.sharedInstance()
-        session.setCategory(AVAudioSessionCategoryPlayAndRecord, error: nil)
+        do {
+            try session.setCategory(AVAudioSessionCategoryPlayAndRecord)
+        } catch _ {
+        }
         audioRecorder = AVAudioRecorder(URL: filePath, settings: nil, error: nil)
         audioRecorder.delegate = self
         audioRecorder.meteringEnabled = true
@@ -70,12 +73,12 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     }
     
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder!, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
         if (flag) {
             recordedAudio = RecordedAudio(filePathUrl: recorder.url, title: recorder.url.lastPathComponent!)
             self.performSegueWithIdentifier("stopRecording", sender: recordedAudio)
         } else {
-            println("Recording was not succesful")
+            print("Recording was not succesful")
             stopButton.hidden = true
             stopRecording.hidden = true
             recordButton.enabled = true
@@ -85,8 +88,8 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "stopRecording" {
-            let playSoundsVC:PlaySoundsViewController = segue.destinationViewController as PlaySoundsViewController
-            let data = sender as RecordedAudio
+            let playSoundsVC:PlaySoundsViewController = segue.destinationViewController as! PlaySoundsViewController
+            let data = sender as! RecordedAudio
             playSoundsVC.receivedAudio = data
         }
     }
@@ -115,8 +118,11 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         initVisibleItems()
         // stop recording
         audioRecorder.stop()
-        var audioSession = AVAudioSession.sharedInstance()
-        audioSession.setActive(false, error: nil)
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(false)
+        } catch _ {
+        }
     }
     
     
